@@ -18,8 +18,19 @@ import (
 )
 var likeCollection *mongo.Collection = database.OpenCollection(database.Client, "like")
 
-// The CreateLike function in Go handles the creation of a like object with validation and insertion
-// into a collection.
+// CreateLike is the API used to create a new like
+// @Summary Create a new Like
+// @Description This endpoint allows a user to create a new like for a post.
+// @Tags Like
+// @Accept json
+// @Produce json
+// @Security APIKeyAuth
+// @Param like body models.Like true "Like Data"
+// @Success 200 {object} models.CreateOutput
+// @Failure 400 {object} models.Error "Invalid pagination parameters"
+// @Failure 401 {object} models.Error "Unauthorized"
+// @Failure 500 {object} models.Error "Internal server error"
+// @Router /likes [post]
 func CreateLike() gin.HandlerFunc {
     return func(c *gin.Context) {
 		uid, exists := c.Get("uid")
@@ -61,7 +72,18 @@ func CreateLike() gin.HandlerFunc {
 
     }
 }
-
+// GetLikeByID is the API used to fetch a single like by ID
+// @Summary Get a Like by ID
+// @Description This endpoint retrieves a like by its ID.
+// @Tags Like
+// @Accept json
+// @Produce json
+// @Param id path string true "Like ID"
+// @Success 200 {object} models.Like
+// @Failure 400 {object} models.Error "Invalid pagination parameters"
+// @Failure 401 {object} models.Error "Unauthorized"
+// @Failure 500 {object} models.Error "Internal server error"
+// @Router /likes/{id} [get]
 func GetLikeByID() gin.HandlerFunc {
     return func(c *gin.Context) {
         likeID := c.Param("id")
@@ -81,7 +103,19 @@ func GetLikeByID() gin.HandlerFunc {
         c.JSON(http.StatusOK, like)
     }
 }
-	
+// DeleteLike deletes a like by ID
+// @Summary Delete a Like
+// @Description This endpoint allows a user to delete a like by ID.
+// @Tags Like
+// @Accept json
+// @Produce json
+// @Security APIKeyAuth
+// @Param id path string true "Like ID"
+// @Success 200 {string} Like deleted successfully
+// @Failure 400 {object} models.Error "Invalid pagination parameters"
+// @Failure 401 {object} models.Error "Unauthorized"
+// @Failure 500 {object} models.Error "Internal server error"
+// @Router /likes/{id} [delete]
 func DeleteLike() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		commentID := c.Param("id")
@@ -109,12 +143,22 @@ func DeleteLike() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "Comment deleted successfully"})
+		c.JSON(http.StatusOK, gin.H{"message": "Like deleted successfully"})
 	}
 }
 
-// The `GetLikeList` function retrieves a paginated list of likes from a database collection and
-// returns it as JSON response in a Gin handler.
+// GetLikeList is the API used to get a list of likes with pagination
+// @Summary Get a list of Likes
+// @Description This endpoint retrieves a paginated list of likes.
+// @Tags Like
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number" default(1)
+// @Param limit query int false "Number of likes per page" default(10)
+// @Success 200 {object} models.LikeList
+// @Failure 400 {object} models.Error "Invalid pagination parameters"
+// @Failure 500 {object} models.Error "Internal server error"
+// @Router /likes [GET]
 func GetLikeList() gin.HandlerFunc {
     return func(c *gin.Context) {
         // Get pagination parameters from query string

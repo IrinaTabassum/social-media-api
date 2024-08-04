@@ -25,8 +25,6 @@ import (
 var userCollection *mongo.Collection = database.OpenCollection(database.Client, "user")
 var validate = validator.New()
 
-//HashPassword is used to encrypt the password before it is stored in the DB
-// The HashPassword function generates a bcrypt hash from a given password string.
 func HashPassword(password string) string {
     bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
     if err != nil {
@@ -36,9 +34,6 @@ func HashPassword(password string) string {
     return string(bytes)
 }
 
-//VerifyPassword checks the input password while verifying it with the passward in the DB.
-// The `VerifyPassword` function is used to compare a provided password with a hashed password stored
-// in the database. Here's a breakdown of what it does:
 func VerifyPassword(userPassword string, providedPassword string) (bool, string) {
     err := bcrypt.CompareHashAndPassword([]byte(providedPassword), []byte(userPassword))
     check := true
@@ -52,9 +47,18 @@ func VerifyPassword(userPassword string, providedPassword string) (bool, string)
     return check, msg
 }
 
-// The SignUp function handles user sign up requests by validating user input, checking for existing
-// email and phone number, hashing the password, generating tokens, and inserting the user data into a
-// collection.
+// RegisterUser
+// @Summary Register a User
+// @Description Register a new User.
+// @Tags Auth Registration and Login
+// @Accept json
+// @Produce json
+// @Security APIKeyAuth
+// @Param user body models.UserRegisterInput true "User register"
+// @Success 200 {object} models.User
+// @Failure 400 {object} models.Error "Invalid request body"
+// @Failure 500 {object} models.Error "Internal server error"
+// @Router /users/signup [post]
 func SignUp() gin.HandlerFunc {
     return func(c *gin.Context) {
         var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
@@ -113,10 +117,17 @@ func SignUp() gin.HandlerFunc {
 
     }
 }
-
-
-// The `Login` function in Go handles user authentication by verifying credentials and generating
-// tokens for successful logins.
+// Login
+// @Summary Login a User
+// @Description Authenticate a user and return access and refresh tokens.
+// @Tags Auth Registration and Login
+// @Accept json
+// @Produce json
+// @Param user body models.UserLoginInput true "User login credentials"
+// @Success 200 {object} models.User "User information with tokens"
+// @Failure 400 {object} models.Error "Invalid request body"
+// @Failure 500 {object} models.Error "Internal server error"
+// @Router /users/login [post]
 func Login() gin.HandlerFunc {
     return func(c *gin.Context) {
         var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)

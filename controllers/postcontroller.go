@@ -21,7 +21,18 @@ import (
 var postCollection *mongo.Collection = database.OpenCollection(database.Client, "post")
 
 
-//CreateUser is the api used to tget a single user
+// CreatePost handles the creation of a new post.
+// @Summary Create a new post
+// @Description Create a new post for an authenticated user
+// @Tags post
+// @Accept json
+// @Produce json
+// @Param post body models.PostInput true "Post data"
+// @Success 200 {object} models.CreateOutput
+// @Failure 400 {object} models.Error "Invalid request body"
+// @Failure 401 {object} models.Error "Unauthorized"
+// @Failure 500 {object} models.Error "Internal server error"
+// @Router /posts [post]
 func CreatePost() gin.HandlerFunc {
     return func(c *gin.Context) {
 		uid, exists := c.Get("uid")
@@ -65,8 +76,17 @@ func CreatePost() gin.HandlerFunc {
     }
 }
 
-// The function `GetPostByID` retrieves a post by its ID along with associated comments and likes using
-// MongoDB aggregation pipeline in a Go application.
+// GetPostByID retrieves a post by its ID.
+// @Summary Get a post by ID
+// @Description Retrieve a post by its ID, along with comments and likes
+// @Tags post
+// @Accept json
+// @Produce json
+// @Param id path string true "Post ID"
+// @Success 200 {object} models.PostOutput
+// @Failure 400 {object} models.Error "Invalid request body"
+// @Failure 500 {object} models.Error "Internal server error"
+// @Router /posts/{id} [get]
 func GetPostByID() gin.HandlerFunc {
     return func(c *gin.Context) {
         postID := c.Param("id")
@@ -100,14 +120,24 @@ func GetPostByID() gin.HandlerFunc {
             c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while decoding post data"})
             return
         }
-		fmt.Println(posts[0])
 
         c.JSON(http.StatusOK, posts[0])
     }
 }
 
-// The function `UpdatePost` in Go handles updating a post in a web application, including
-// authorization checks and database operations.
+// UpdatePost updates an existing post.
+// @Summary Update a post
+// @Description Update an existing post by its ID for the authenticated user
+// @Tags post
+// @Accept json
+// @Produce json
+// @Param id path string true "Post ID"
+// @Param post body models.PostInput true "Post data"
+// @Success 200 {string} Post updated successfully
+// @Failure 400 {object} models.Error "Invalid request body"
+// @Failure 401 {object} models.Error "Unauthorized"
+// @Failure 500 {object} models.Error "Internal server error"
+// @Router /posts/{id} [put]
 func UpdatePost() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		postID := c.Param("id")
@@ -160,8 +190,18 @@ func UpdatePost() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"message": "Post updated successfully"})
 	}
 }
-
-// DeletePost deletes a post by ID
+// DeletePost deletes a post by its ID.
+// @Summary Delete a post
+// @Description Delete a post by its ID for the authenticated user
+// @Tags post
+// @Accept json
+// @Produce json
+// @Param id path string true "Post ID"
+// @Success 200 {string} Post deleted successfully
+// @Failure 400 {object} models.Error "Invalid request body"
+// @Failure 401 {object} models.Error "Unauthorized"
+// @Failure 500 {object} models.Error "Internal server error"
+// @Router /posts/{id} [delete]
 func DeletePost() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		postID := c.Param("id")
@@ -193,9 +233,18 @@ func DeletePost() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"message": "Post deleted successfully"})
 	}
 }
-
-// The ListPosts function retrieves paginated post data with comments and likes aggregation using
-// MongoDB aggregation pipeline in a Go application.
+// ListPosts lists posts with pagination.
+// @Summary List posts
+// @Description Retrieve a list of posts with pagination, including comments and likes
+// @Tags post
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number"
+// @Param limit query int false "Number of items per page"
+// @Success 200 {object} models.PostList
+// @Failure 400 {object} models.Error "Invalid pagination parameters"
+// @Failure 500 {object} models.Error "Internal server error"
+// @Router /posts [get]
 func ListPosts() gin.HandlerFunc {
     return func(c *gin.Context) {
         // Get pagination parameters from query string

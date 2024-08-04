@@ -10,8 +10,7 @@ import (
 func PostRoutes(incomingRoutes *gin.Engine) {
 	incomingRoutes.GET("/posts/:id", controller.GetPostByID())
 	incomingRoutes.GET("/posts", controller.ListPosts())
-    incomingRoutes.Use(middleware.Authentication())
-    incomingRoutes.POST("/posts", controller.CreatePost())
-    incomingRoutes.PUT("/posts/:id", controller.UpdatePost())
-	incomingRoutes.DELETE("/posts/:id", controller.DeletePost())
+	incomingRoutes.POST("/posts" ,middleware.Authentication(), controller.CreatePost())
+    incomingRoutes.PUT("/posts/:id" ,middleware.Authentication(), controller.UpdatePost())
+	incomingRoutes.DELETE("/posts/:id" ,middleware.Authentication(), controller.DeletePost())
 }

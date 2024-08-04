@@ -14,3 +14,4 @@ type Post struct {
     Updated_at    time.Time          `json:"updated_at"`
     User_id       primitive.ObjectID `json:"user_id"`
 }	
+

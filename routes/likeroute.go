@@ -8,9 +8,8 @@ import (
 )
 
 func LikeRoutes(incomingRoutes *gin.Engine) {
-	incomingRoutes.Use(middleware.Authentication())
-    incomingRoutes.POST("/likes", controller.CreateLike())
-    incomingRoutes.GET("/likes/:id", controller.GetLikeByID())
-	incomingRoutes.DELETE("/likes/:id", controller.DeleteLike())
-	incomingRoutes.GET("/likes", controller.GetLikeList())
+    incomingRoutes.POST("/likes", middleware.Authentication(), controller.CreateLike())
+    incomingRoutes.GET("/likes/:id", middleware.Authentication(), controller.GetLikeByID())
+	incomingRoutes.DELETE("/likes/:id", middleware.Authentication(), controller.DeleteLike())
+	incomingRoutes.GET("/likes", middleware.Authentication(), controller.GetLikeList())
 }

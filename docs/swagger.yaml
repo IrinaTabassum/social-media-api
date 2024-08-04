@@ -1,0 +1,765 @@
+definitions:
+  models.Comment:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      post_id:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    required:
+    - description
+    - post_id
+    - user_id
+    type: object
+  models.CommentInput:
+    properties:
+      description:
+        type: string
+      post_id:
+        type: string
+    required:
+    - description
+    - post_id
+    type: object
+  models.CommentList:
+    properties:
+      comments:
+        items:
+          $ref: '#/definitions/models.Comment'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+    type: object
+  models.CreateOutput:
+    properties:
+      insertedID:
+        type: string
+    type: object
+  models.Error:
+    properties:
+      error: {}
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  models.Like:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      post_id:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    required:
+    - post_id
+    - user_id
+    type: object
+  models.LikeList:
+    properties:
+      likes:
+        items:
+          $ref: '#/definitions/models.Like'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+    type: object
+  models.PostInput:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    required:
+    - description
+    - name
+    type: object
+  models.PostList:
+    properties:
+      limit:
+        type: integer
+      page:
+        type: integer
+      posts:
+        items:
+          $ref: '#/definitions/models.Poststac'
+        type: array
+    type: object
+  models.PostOutput:
+    properties:
+      comments:
+        items:
+          $ref: '#/definitions/models.Comment'
+        type: array
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      likes:
+        items:
+          $ref: '#/definitions/models.Like'
+        type: array
+      name:
+        type: string
+      total_comments:
+        type: integer
+      total_likes:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    required:
+    - description
+    - name
+    type: object
+  models.Poststac:
+    properties:
+      comment_count:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      like_count:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    required:
+    - description
+    - name
+    type: object
+  models.User:
+    properties:
+      Password:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      id:
+        type: string
+      last_name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      phone:
+        type: string
+      refresh_token:
+        type: string
+      token:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    required:
+    - Password
+    - email
+    - first_name
+    - last_name
+    - phone
+    type: object
+  models.UserLoginInput:
+    properties:
+      Password:
+        type: string
+      email:
+        type: string
+    required:
+    - Password
+    - email
+    type: object
+  models.UserRegisterInput:
+    properties:
+      Password:
+        type: string
+      email:
+        type: string
+      first_name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      last_name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      phone:
+        type: string
+    required:
+    - Password
+    - email
+    - first_name
+    - last_name
+    - phone
+    type: object
+info:
+  contact: {}
+paths:
+  /comments:
+    get:
+      consumes:
+      - application/json
+      description: This endpoint retrieves a paginated list of comments.
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Number of comments per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CommentList'
+        "400":
+          description: Invalid pagination parameters
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get a list of Comments
+      tags:
+      - Comment
+    post:
+      consumes:
+      - application/json
+      description: Create a new comment
+      parameters:
+      - description: Comment data
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/models.CommentInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Comment'
+        "400":
+          description: Invalid pagination parameters
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new comment
+      tags:
+      - Comment
+  /comments/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: This endpoint allows a user to delete a comment by ID.
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Invalid pagination parameters
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - APIKeyAuth: []
+      summary: Delete a Comment
+      tags:
+      - Comment
+    get:
+      consumes:
+      - application/json
+      description: Get a comment by ID
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Comment'
+        "400":
+          description: Invalid pagination parameters
+          schema:
+            $ref: '#/definitions/models.Error'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get a comment by ID
+      tags:
+      - Comment
+    put:
+      consumes:
+      - application/json
+      description: This endpoint allows a user to update an existing comment.
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated Comment Data
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/models.Comment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Invalid pagination parameters
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - APIKeyAuth: []
+      summary: Update a Comment
+      tags:
+      - Comment
+  /likes:
+    get:
+      consumes:
+      - application/json
+      description: This endpoint retrieves a paginated list of likes.
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Number of likes per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.LikeList'
+        "400":
+          description: Invalid pagination parameters
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get a list of Likes
+      tags:
+      - Like
+    post:
+      consumes:
+      - application/json
+      description: This endpoint allows a user to create a new like for a post.
+      parameters:
+      - description: Like Data
+        in: body
+        name: like
+        required: true
+        schema:
+          $ref: '#/definitions/models.Like'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CreateOutput'
+        "400":
+          description: Invalid pagination parameters
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - APIKeyAuth: []
+      summary: Create a new Like
+      tags:
+      - Like
+  /likes/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: This endpoint allows a user to delete a like by ID.
+      parameters:
+      - description: Like ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Invalid pagination parameters
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - APIKeyAuth: []
+      summary: Delete a Like
+      tags:
+      - Like
+    get:
+      consumes:
+      - application/json
+      description: This endpoint retrieves a like by its ID.
+      parameters:
+      - description: Like ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Like'
+        "400":
+          description: Invalid pagination parameters
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get a Like by ID
+      tags:
+      - Like
+  /posts:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of posts with pagination, including comments and
+        likes
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PostList'
+        "400":
+          description: Invalid pagination parameters
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: List posts
+      tags:
+      - post
+    post:
+      consumes:
+      - application/json
+      description: Create a new post for an authenticated user
+      parameters:
+      - description: Post data
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/models.PostInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CreateOutput'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Create a new post
+      tags:
+      - post
+  /posts/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a post by its ID for the authenticated user
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Delete a post
+      tags:
+      - post
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a post by its ID, along with comments and likes
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PostOutput'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Get a post by ID
+      tags:
+      - post
+    put:
+      consumes:
+      - application/json
+      description: Update an existing post by its ID for the authenticated user
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Post data
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/models.PostInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Update a post
+      tags:
+      - post
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user and return access and refresh tokens.
+      parameters:
+      - description: User login credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserLoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User information with tokens
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Error'
+      summary: Login a User
+      tags:
+      - Auth Registration and Login
+  /users/signup:
+    post:
+      consumes:
+      - application/json
+      description: Register a new User.
+      parameters:
+      - description: User register
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserRegisterInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/models.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - APIKeyAuth: []
+      summary: Register a User
+      tags:
+      - Auth Registration and Login
+swagger: "2.0"

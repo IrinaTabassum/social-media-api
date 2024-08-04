@@ -22,7 +22,19 @@ import (
 var commentCollection *mongo.Collection = database.OpenCollection(database.Client, "comment")
 
 
-//CreateUser is the api used to tget a single user
+// CreateComment creates a new comment
+// @Summary Create a new comment
+// @Description Create a new comment
+// @Tags Comment
+// @Accept json
+// @Produce json
+// @Param comment body models.CommentInput true "Comment data"
+// @Success 200 {object} models.Comment
+// @Failure 400 {object} models.Error "Invalid pagination parameters"
+// @Failure 401 {object} models.Error "Unauthorized"
+// @Failure 500 {object} models.Error "Internal server error"
+// @Security ApiKeyAuth
+// @Router /comments [post]
 func CreateComment() gin.HandlerFunc {
     return func(c *gin.Context) {
 		uid, exists := c.Get("uid")
@@ -69,8 +81,18 @@ func CreateComment() gin.HandlerFunc {
     }
 }
 
-// The function `GetCommentByID` retrieves a comment by its ID from a MongoDB collection and returns it
-// as a JSON response using Gin framework in Go.
+// GetCommentByID retrieves a comment by its ID
+// @Summary Get a comment by ID
+// @Description Get a comment by ID
+// @Tags Comment
+// @Accept json
+// @Produce json
+// @Param id path string true "Comment ID"
+// @Success 200 {object} models.Comment
+// @Failure 400 {object} models.Error "Invalid pagination parameters"
+// @Failure 404 {object} models.Error "Not found"
+// @Failure 500 {object} models.Error "Internal server error"
+// @Router /comments/{id} [get]
 func GetCommentByID() gin.HandlerFunc {
     return func(c *gin.Context) {
         commentID := c.Param("id")
@@ -92,10 +114,20 @@ func GetCommentByID() gin.HandlerFunc {
     }
 }
 
-
-// The UpdateComment function in Go handles updating a comment in a Gin framework application by
-// validating the comment ID, user authorization, binding JSON data, updating the comment
-
+// UpdateComment is the API used to update an existing comment
+// @Summary Update a Comment
+// @Description This endpoint allows a user to update an existing comment.
+// @Tags Comment
+// @Accept json
+// @Produce json
+// @Security APIKeyAuth
+// @Param id path string true "Comment ID"
+// @Param comment body models.Comment true "Updated Comment Data"
+// @Success 200 {string} Comment updated successfully
+// @Failure 400 {object} models.Error "Invalid pagination parameters"
+// @Failure 401 {object} models.Error "Unauthorized"
+// @Failure 500 {object} models.Error "Internal server error"
+// @Router /comments/{id} [put]
 func UpdateComment() gin.HandlerFunc {
     return func(c *gin.Context) {
         commentID := c.Param("id")
@@ -144,7 +176,19 @@ func UpdateComment() gin.HandlerFunc {
     }
 }
 
-// DeleteComment deletes a post by ID
+// DeleteComment is the API used to delete a comment by ID
+// @Summary Delete a Comment
+// @Description This endpoint allows a user to delete a comment by ID.
+// @Tags Comment
+// @Accept json
+// @Produce json
+// @Security APIKeyAuth
+// @Param id path string true "Comment ID"
+// @Success 200 {string} Comment deleted successfully
+// @Failure 400 {object} models.Error "Invalid pagination parameters"
+// @Failure 401 {object} models.Error "Unauthorized"
+// @Failure 500 {object} models.Error "Internal server error"
+// @Router /comments/{id} [delete]
 func DeleteComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		commentID := c.Param("id")
@@ -176,6 +220,18 @@ func DeleteComment() gin.HandlerFunc {
 	}
 }
 
+// GetCommentList is the API used to get a list of comments with pagination
+// @Summary Get a list of Comments
+// @Description This endpoint retrieves a paginated list of comments.
+// @Tags Comment
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number" default(1)
+// @Param limit query int false "Number of comments per page" default(10)
+// @Success 200 {object} models.CommentList
+// @Failure 400 {object} models.Error "Invalid pagination parameters"
+// @Failure 500 {object} models.Error "Internal server error"
+// @Router /comments [get]
 func GetCommentList() gin.HandlerFunc {
     return func(c *gin.Context) {
         // Get pagination parameters from query string
